@@ -1,0 +1,315 @@
+ {$R+}         {$I+}          {$X-}
+ {$S+}         {$Q+}
+PROGRAM Pr2b;
+{Programa que sirve de calculadora de numeros conplejos y realiza la
+ modificacion de los operandos, asi como las operaciones de suma, resta
+ multiplicacion y division; todo ello a traves de un menu, que se le muestra
+ al usuario}
+USES Crt;
+VAR
+ a,b,c,d: real;
+ opcion: integer;
+
+
+             PROCEDURE inicializaciones (var a,b,c,d: real);
+             {Este procedimiento inicializa los coeficientes a cero, tal como
+              pide el enunciado}
+             {a[OUT]: parametro de salida correspondiente al valor del
+              primer coeficiente del primer operando}
+             {b[OUT]: parametro de salida que corresponde al valor del
+              segundo coeficiente del primer operando}
+             {c[OUT]: parametro de salida correspondiente al valor del
+              primer coeficiente del segundo operando}
+             {d[OUT]: parametro de salida que corresponde al valor del
+              segundo coeficiente del segundo operando}
+             BEGIN
+               a:= 0;
+               b:= 0;
+               c:= 0;
+               d:= 0;
+             END;
+
+
+             PROCEDURE menu (a,b,c,d: real; var opcion: integer);
+             {Este procedimieto muestra por pantalla el menu de opciones
+              y lee la opcion que introduce el usuario}
+             {a[IN]: parametro de entrada correspondiente al valor del
+              primer coeficiente del primer operando}
+             {b[IN]: parametro de entrada que corresponde al valor del
+              segundo coeficiente del primer operando}
+             {c[IN]: parametro de entrada correspondiente al valor del
+              primer coeficiente del segundo operando}
+             {d[IN]: parametro de entrada que corresponde al valor del
+              segundo coeficiente del segundo operando}
+             {opcion[OUT]: parametro de salida que almacena la opcion del
+              usuario}
+             VAR
+              opcionUser: String;
+              {Esta variable almacena el dato que introduce el usuario}
+              error: integer;
+
+
+                    PROCEDURE muestraOperandos (a,b,c,d: real);
+                    {Este procedimiento muestra los operandos en pantalla}
+                    {a[IN]: parametro de entrada correspondiente al valor del
+                     primer coeficiente del primer operando}
+                    {b[IN]: parametro de entrada que corresponde al valor del
+                     segundo coeficiente del primer operando}
+                    {c[IN]: parametro de entrada correspondiente al valor del
+                     primer coeficiente del segundo operando}
+                    {d[IN]: parametro de entrada que corresponde al valor del
+                     segundo coeficiente del segundo operando}
+                    BEGIN
+                      Writeln ('Los operandos son:');
+                      Writeln (a:8:2,'  + ',b:5:2,'i');
+                      Writeln (c:8:2,'  + ',d:5:2,'i');
+                      writeln;
+                    END;
+
+
+             BEGIN
+               REPEAT
+                 muestraOperandos (a,b,c,d);
+                 writeln;
+                 Writeln ('1.- Cambiar los coeficientes del primer operando');
+                 Writeln ('2.- Cambiar los coeficientes del segundo operando');
+                 Writeln ('3.- Realizar la suma');
+                 Writeln ('4.- Realizar la resta');
+                 Writeln ('5.- Realizar la multiplicacion');
+                 Writeln ('6.- Realizar la division');
+                 Writeln ('7.- Salir');
+                 writeln;
+                 Writeln ('Por favor, introduzca una de las opciones que se muestran y pulse INTRO');
+                 Writeln;
+                 Readln (opcionUser);
+                 Val (opcionUser, opcion, error);
+               UNTIL (opcion >= 1) AND (opcion <= 7) AND (error = 0);
+             END;
+
+
+
+             PROCEDURE procesaDatos (opcion: integer; var a,b,c,d: real);
+             {Este procedimiento realizara las cuentas y los cambios de los
+              operandos}
+             {opcion[IN]: parametro de entrada que contiene la opcion que ha
+              metido el usuraio por teclado}
+             {a[OUT]: parametro de entrada correspondiente al valor del
+              primer coeficiente del primer operando}
+             {b[OUT]: parametro de entrada que corresponde al valor del
+              segundo coeficiente del primer operando}
+             {c[OUT]: parametro de entrada correspondiente al valor del
+              primer coeficiente del segundo operando}
+             {d[OUT]: parametro de entrada que corresponde al valor del
+              segundo coeficiente del segundo operando}
+             VAR
+              error1, error2: integer;
+
+
+
+                    PROCEDURE  suma (var a,b: real; c,d: real);
+                    {Este procedimiento realiza la suma de los operandos}
+                    {a[IN-OUT]: parametro de entrada/salida correspondiente al valor del
+                     primer coeficiente del primer operando}
+                    {b[IN-OUT]: parametro de entrada/salida que corresponde al valor del
+                     segundo coeficiente del primer operando}
+                    {c[IN]: parametro de entrada correspondiente al valor del
+                     primer coeficiente del segundo operando}
+                    {d[IN]: parametro de entrada que corresponde al valor del
+                     segundo coeficiente del segundo operando}
+                    BEGIN
+                      a:= a + c;
+                      b:= b + d;
+                    END;
+
+
+
+                    PROCEDURE resta (var a,b: real; c,d: real);
+                    {Este procedimiento realiza la suma de los operandos}
+                    {a[IN-OUT]: parametro de entrada/salida correspondiente al valor del
+                     primer coeficiente del primer operando}
+                    {b[IN-OUT]: parametro de entrada/salida que corresponde al valor del
+                     segundo coeficiente del primer operando}
+                    {c[IN]: parametro de entrada correspondiente al valor del
+                     primer coeficiente del segundo operando}
+                    {d[IN]: parametro de entrada que corresponde al valor del
+                     segundo coeficiente del segundo operando}
+                    BEGIN
+                      a:= a - c;
+                      b:= b - d;
+                    END;
+
+
+
+                    PROCEDURE multiplicacion (var a,b: real; c,d: real);
+                    {Este procedimiento realiza la suma de los operandos}
+                    {a[IN-OUT]: parametro de entrada/salida correspondiente al valor del
+                     primer coeficiente del primer operando}
+                    {b[IN-OUT]: parametro de entrada/salida que corresponde al valor del
+                     segundo coeficiente del primer operando}
+                    {c[IN]: parametro de entrada correspondiente al valor del
+                     primer coeficiente del segundo operando}
+                    {d[IN]: parametro de entrada que corresponde al valor del
+                     segundo coeficiente del segundo operando}
+                    VAR
+                     auxA: real;
+                     {esta variable se declara para poder operar con el
+                      valor inicial, ya que este se desecha cuando se
+                      guarda en la variable a}
+                    BEGIN
+                      auxA:= a;
+                      a:= (a * c) - (b * d);
+                      b:= (auxA * d) + (b * c);
+                    END;
+
+
+
+                    PROCEDURE division (var a,b: real; c,d: real);
+                    {Este procedimiento realiza la suma de los operandos}
+                    {a[IN-OUT]: parametro de entrada/salida correspondiente al valor del
+                     primer coeficiente del primer operando}
+                    {b[IN-OUT]: parametro de entrada/salida que corresponde al valor del
+                     segundo coeficiente del primer operando}
+                    {c[IN]: parametro de entrada correspondiente al valor del
+                     primer coeficiente del segundo operando}
+                    {d[IN]: parametro de entrada que corresponde al valor del
+                    segundo coeficiente del segundo operando}
+                    VAR
+                     auxA: real;
+                     {esta variable se declara para poder operar con el
+                     valor inicial, ya que este se desecha cuando se
+                     guarda en la variable a}
+                    BEGIN
+                      auxA:= a;
+                      a:= (a*c + b*d) / (sqr (c) + sqr (d));
+                      b:= (b*c - auxA*d) / (sqr (c) + sqr (d));
+                    END;
+
+
+
+                    PROCEDURE escribeError;
+                    {Este procedimiento se limita a escribir un mensaje de
+                     error, cuando sea conveniente}
+                    BEGIN
+                      Writeln;
+                      Writeln (' ***** ERROR: Datos NO VALIDOS ***** ');
+                      Writeln;
+                    END;
+
+
+                    PROCEDURE compruebaOp1 (var x: real; var error1: integer);
+                    {Este procedimiento sirve para comprobar la validez del dato
+                     que se ha introducido para la parte "real" del operando}
+                    {x[OUT]: parametro de salida que almacenara el dato que
+                     introduzca el usuario, tras haber realizado la comprobacion}
+                    {error1[OUT]: parametro de salida que almacenara la posicion
+                     del string en la que se comete el error. Su valor sera 0
+                     cuando no haya error alguno}
+                    VAR
+                     datoIN: String;
+                     {Esta variable representa el dato que introduce el usuario
+                      leido como una cadena}
+                    BEGIN
+                      Writeln ('Introduzca el coeficiente de la parte "real" y pulse INTRO');
+                      Readln (datoIN);
+                      Val (datoIN, x, error1);
+                      IF error1 <> 0 THEN
+                        escribeError;
+                    END;
+
+
+                    PROCEDURE compruebaOp2 (var x: real; var error2: integer);
+                    {Este procedimiento sirve para comprobar la validez del dato
+                     que se ha introducido para la parte "imaginaria" del operando}
+                    {x[OUT]: parametro de salida que almacenara el dato que
+                     introduzca el usuario, tras haber realizado la comprobacion}
+                    {error2[OUT]: parametro de salida que almacenara la posicion
+                     del string en la que se comete el error. Su valor sera 0
+                     cuando no haya error alguno}
+                    VAR
+                     datoIN: String;
+                     {Esta variable representa el dato que introduce el usuario
+                      leido como una cadena}
+                    BEGIN
+                      Writeln ('Introduzca el coeficiente de la parte "imaginaria" y pulse INTRO');
+                      Readln (datoIN);
+                      Val (datoIN, x, error2);
+                      IF error2 <> 0 THEN
+                        escribeError;
+                    END;
+
+
+             BEGIN
+               IF opcion <> 7 THEN
+                 REPEAT
+                   CASE opcion OF
+                     1:   begin
+                            ClrScr;
+                            writeln;
+                            Writeln ('A continuacion deber  introducir los coeficientes del primer operando');
+                            REPEAT
+                              compruebaOp1 (a, error1);
+                            UNTIL error1 = 0;
+                            REPEAT
+                              compruebaOp2 (b, error2);
+                            UNTIL error2 = 0;
+                          end;
+                     2:   begin
+                            ClrScr;
+                            writeln;
+                            Writeln ('A continuacion deber  introducir los coeficientes del segundo operando');
+                            Writeln ('Los coeficientes deben ser distintos de cero, debido');
+                            Writeln ('a la realizacion de la division');
+                            REPEAT
+                              compruebaOp1 (c, error1);
+                            UNTIL (error1 = 0) AND (c <> 0);
+                            REPEAT
+                              compruebaOp2 (d, error2);
+                            UNTIL (error2 = 0) AND (d <> 0);
+                          end;
+                     3:   begin
+                            ClrScr;
+                            writeln;
+                            suma (a,b,c,d);
+                            Writeln ('El resultado de la suma es: ',a:5:2, ' + (',b:5:2, ')i');
+                          end;
+                     4:   begin
+                            ClrScr;
+                            Writeln;
+                            resta (a,b,c,d);
+                            Writeln ('El resultado de la resta es: ',a:5:2, ' + (',b:5:2, ')i');
+                          end;
+                     5:   begin
+                            ClrScr;
+                            Writeln;
+                            multiplicacion (a,b,c,d);
+                            Writeln ('El resultado de la multiplicacion es: ',a:5:2, ' + (',b:5:2, ')i');
+                          end;
+                     6:   begin
+                            IF (c <> 0) AND (d <> 0) THEN
+                            {Este IF es para evitar la division entre cero}
+                            begin
+                              ClrScr;
+                              Writeln;
+                              division (a,b,c,d);
+                              Writeln ('El resultado de la division es: ',a:5:2, ' + (',b:5:2, ')i');
+                            end
+                            ELSE
+                            begin
+                              ClrScr;
+                              Writeln;
+                              Writeln ('***** ERROR: est  intentando dividir por cero *****');
+                              Writeln;
+                            end;
+                          end;
+                   end;
+                   menu (a,b,c,d,opcion);
+                 UNTIL opcion = 7;
+             END;
+
+
+BEGIN
+  ClrScr;
+  inicializaciones (a,b,c,d);
+  menu (a,b,c,d,opcion);
+  procesaDatos (opcion, a, b, c, d);
+END.

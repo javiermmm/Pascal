@@ -1,0 +1,447 @@
+  {$R+}    {$I+}         {$X-}
+  {$S+}    {$Q+}
+
+PROGRAM Pr3A;
+USES Crt;
+CONST
+ bola = chr (9);
+ bloque = chr (178);
+ FILAS = 8;
+ COLUMNAS = 5;
+
+TYPE
+ TFilas = 1..FILAS;
+ TColumnas = 1..COLUMNAS;
+ TTablero = ARRAY [TFilas, TColumnas] OF char;
+ TDireccion = (N, S, E, O, NE, NO, SE, SO);
+
+VAR
+ opcion: integer;
+ Tablero: TTablero;
+ fila: TFilas;
+ columna: TColumnas;
+ direccion: TDireccion;
+ horas, minutos, segundos: integer;
+
+
+        PROCEDURE Bienvenida (var opcion: integer);
+        {Este procedimiento explica brevemente el funcionamiento del programa}
+        {opcion[OUT]: Parametro de salida que representa la opcion que elige el usuario}
+        VAR
+         opcionUser: string[2];
+         error: integer;
+        BEGIN
+          REPEAT
+            Writeln;
+            Writeln ('Este programa muestra en la pantalla un tablero de pinball');
+            Writeln ('de 8x5, con una bola y un numero de obstaculos, que usted debera decidir.');
+            Writeln ('La salida de la bola, se producir  por la esquina inferior derecha');
+            Writeln ('Si lo desea, puede cancelar la ejecucion del programa, pulsando');
+            Writeln ('cuando lo crea conveniente, cualquier tecla.');
+            Writeln;
+            Writeln ('Elija la opcion que desea realizar a continuacion');
+            Writeln;
+            Writeln ('1.- CONTINUAR.');
+            Writeln ('2.- SALIR DEL PROGRAMA.');
+            Readln (opcionUser);
+            Val (opcionUser, opcion, error);
+          UNTIL (error <> 0) OR (opcion = 1) OR (opcion = 2) OR (opcion < 31000);
+          Clrscr;
+        END;
+
+
+         PROCEDURE InicializaSituacion (var fila: TFilas; var columna: TColumnas;
+                                        var direccion: TDireccion; var horas, minutos, segundos: integer);
+         {Este procedimiento inicializa el tiempo, la posicion, y la direccion de la bola}
+         {fila[OUT]: parametro de salida que almacena la fila inicial de la bola}
+         {columna[OUT]: parametro de salida que almacena la columna inicial de la bola}
+         {direccion[OUT]: parametro de salida que almacena la direccion inicial de la bola}
+         {horas[OUT]: parametro de salida que almacena las horas iniciales al empezar el pinball}
+         {minutos[OUT]: parametro de salida que almacena los minutos iniciales al empezar el pinball}
+         {segundos[OUT]: parametro de salida que almacena los segundos iniciales al empezar el pinball}
+         BEGIN
+           fila:= 1;
+           columna:= 1;
+           direccion:= SE;
+           horas:= 0;
+           minutos:= 0;
+           segundos:= 0;
+         END;
+
+
+         PROCEDURE InicializaTablero (var Tablero: TTablero);
+         {Este procedimiento realiza la inicializacion del tablero,
+          colocando los bloques que introduzca el usuario, asi como
+          la bola en la esquina superior izquierda}
+         {Tablero[OUT]: Parametro de salida que almacena la situacion
+          inicial del tablero}
+         VAR
+          f: Tfilas;
+          c: TColumnas;
+
+
+                 PROCEDURE colocaBloques (var Tablero: TTablero);
+                 {Este procedimiento realiza la colocacion aleatoria
+                  del numero de bloques que indique el usuario}
+                 {Tablero[IN-OUT]: parametro de entrada/salida que
+                  representa la situacion del tablero}
+                 VAR
+                  bloques, numBloques: integer;
+                  fila: TFilas;
+                  columna: TColumnas;
+                  error: integer;
+                  BloquesUser: string [3];
+
+
+                  BEGIN
+                    REPEAT
+                      Writeln ('Por favor introduzca el numero de bloques que desea colocar en el pinball.');
+                      Writeln ('Los bloques se colocaran de manera aleatoria, ');
+                      Writeln ('por lo que se le recomienda introducir en torno a 4 bloques, ');
+                      Writeln ('para no recargar mucho el tablero y dificultar ');
+                      Writeln ('la salida de la bola, y nunca mas de 39 (40 casillas menos una para la bola)');
+                      Readln (BloquesUser);
+                      Val (BloquesUser, numBloques, error);
+                    UNTIL (numBloques <= 39) AND (numBloques >= 0) AND (error = 0) AND (BloquesUser < '31000');
+                    fila:= 2;
+                    columna:= 3;
+                    bloques:= 0;
+                    REPEAT
+                      IF (numBloques <> 0) THEN
+                        begin
+                          fila:= random (FILAS)+1;
+                          columna:= random (COLUMNAS)+1;
+                            IF ((fila <> 1) OR (columna <> 1)) AND (Tablero[fila, columna] = ' ') THEN
+                            begin
+                              bloques:= bloques+1;
+                              Tablero [fila, columna]:= bloque;
+                            end;
+                        end;
+                    UNTIL (bloques = numBloques);
+                  END;
+
+
+         BEGIN
+           FOR f:= 1 TO FILAS DO
+             FOR c:= 1 TO COLUMNAS DO
+               Tablero [f,c] := ' ';
+           Tablero [1,1]:= bola;
+           colocaBloques (Tablero);
+         END;
+
+
+         PROCEDURE mostrarTablero (Tablero: TTablero);
+         {Este procedimiento muestra en pantalla el pinball}
+         {Tablero[IN]: parametro de entrada que representa el
+          tablero que se quiere escribir}
+         VAR
+          f: TFilas;
+          c: TColumnas;
+          x: integer;
+          y: integer;
+
+
+                 PROCEDURE LineasHorizontales;
+                 {Este procedimiento pinta las lineas horizontales}
+                 VAR
+                  f,c,x,y: integer;
+                 BEGIN
+                   Y:= 5;
+                   FOR f:= 1 TO 9 DO
+                     begin
+                       x:= 25;
+                       FOR c:= 1 TO 5 DO
+                         begin
+                           gotoXY (x,y);
+                           write (chr (196));
+                           x:= x+2;
+                         end;
+                       y:= y+2;
+                     end;
+                 END;
+
+
+                 PROCEDURE LineasVerticales;
+                 {Este procedimiento pinta las lineas
+                  verticales y las intersecciones de la
+                  cuadricula}
+
+                      PROCEDURE dibujaIntersecciones;
+                      {Este procedimiento solo dibuja las
+                       intersecciones de las lineas}
+                      VAR
+                       f,c,x,y: integer;
+                      BEGIN
+                        Y:= 24;
+                        FOR f:= 1 TO 6 DO
+                          begin
+                            x:= 5;
+                            FOR c:= 1 TO 9 DO
+                              begin
+                                gotoXY (y,x);
+                                write (chr (197));
+                                x:= x+2;
+                              end;
+                            y:= y+2;
+                          end;
+                      END;
+
+
+                      PROCEDURE DibujaLineas;
+                      {Este procedimiento solo dibuja
+                       las lineas verticales}
+                      VAR
+                       f,c,x,y: integer;
+                      BEGIN
+                        Y:= 24;
+                        FOR f:= 1 TO 6 DO
+                          begin
+                            x:= 6;
+                            FOR c:= 1 TO 8 DO
+                              begin
+                                gotoXY (y,x);
+                                write (chr (179));
+                                x:= x+2;
+                              end;
+                            y:= y+2;
+                          end;
+                      END;
+
+
+                 BEGIN
+                   DibujaLineas;
+                   DibujaIntersecciones;
+                 END;
+
+
+         BEGIN
+           ClrScr;
+           lineasHorizontales;
+           lineasVerticales;
+           Y:= 6;
+           FOR f:= 1 TO FILAS DO
+             begin
+               x:= 25;
+               FOR c:= 1 TO COLUMNAS DO
+                 begin
+                   gotoXY (x,y);
+                   write (Tablero [f,c]);
+                   x:= x+2;
+                 end;
+               y:= y+2;
+             end;
+         END;
+
+
+         PROCEDURE mostrarTiempo (horas, minutos, segundos: integer);
+         {Este procedimiento muestra el contador del tiempo en pantalla}
+         {horas[IN]: parametro de entrada que almacena las horas}
+         {minutos[IN]: parametro de entrada que almacena los minutos}
+         {segundos[IN]: parametro de entrada que almacena los segundos}
+         BEGIN
+           gotoXY (27, 3);
+           IF (segundos >= 0) AND (segundos <= 9) AND (minutos <= 9) AND (minutos >= 0) THEN
+             write ('0',horas, ':','0',minutos, ':', '0',segundos)
+           ELSE
+             IF (minutos >= 0) AND (minutos <= 9) AND (segundos >= 10) THEN
+               write ('0',horas, ':', '0', minutos, ':', segundos)
+             ELSE
+               IF (minutos >= 10) AND (segundos <= 9) AND (segundos >= 0) THEN
+                 write ('0',horas, ':',minutos, ':', '0',segundos)
+               ELSE
+                 write ('0',horas, ':', minutos, ':', segundos)
+         END;
+
+
+         PROCEDURE Visualizacion (Tablero: TTablero; fila: TFilas; columna: TColumnas; direccion: TDireccion;
+                                  horas, minutos, segundos: integer);
+         {Este procedimiento realiza las operaciones principales y permite la visualizacion de los movimientos
+          de la bola por pantalla}
+         {Tablero[OUT]: Parametro de salida que almacena la situacion
+          actual del tablero}
+         {fila[IN]: parametro de entrada que almacena la fila en la que se encuentra la bola}
+         {columna[IN]: parametro de entrada que almacena la columna en la que se encuentra la bola}
+         {direccion[IN]: parametro de entrada que almacena la direccion que lleva la bola}
+         {horas[IN]: parametro de entrada que almacena las horas}
+         {minutos[IN]: parametro de entrada que almacena los minutos}
+         {segundos[IN]: parametro de entrada que almacena los segundos}
+         VAR
+          fin: boolean;
+          numMovimientos: integer;
+
+
+                 PROCEDURE avanzarTiempo (var minutos, segundos: integer);
+                 {Este procedimiento se emplea para avanzar el "reloj" del programa}
+                 {minutos[OUT]: parametro de salida que almacena los minutos totales
+                  transcurridos}
+                 {segundos[OUT]: parametro de salida que almacena los segundos
+                  transcurridos (al llegar a 59 vuelve a cero)}
+                 BEGIN
+                     IF (segundos <= 58) THEN
+                       segundos:= segundos+1
+                     ELSE
+                       begin
+                         segundos:= 0;
+                         minutos:= minutos +1;
+                       end;
+                 END;
+
+
+                 PROCEDURE realizarMovimiento (var Tablero: TTablero; var fila: TFilas; var columna: TColumnas;
+                                               var direccion: TDireccion; var fin: boolean; var numMovimientos: integer);
+                 {Este procedimiento realiza el movimiento de la bola por el tablero del pinball}
+                 {Tablero[OUT]: Parametro de salida que almacena la situacion del tablero}
+                 {fila[OUT]: parametro de salida que almacena la fila en la que se encuentra la bola}
+                 {columna[OUT]: parametro de salida que almacena la columna en la que se encuentra la bola}
+                 {direccion[OUT]: parametro de salida que almacena la direccion que lleva la bola}
+                 {fin[OUT]: parametro de salida que representa el fin de la ejecucion}
+                 {numMovimientos[OUT]: parametro de salida que representa el n£mero de movimientos que
+                  INTENTA hacer la bola}
+
+
+                         FUNCTION casillaDestinoValida (direccion: TDireccion; fila: TFilas; columna: TColumnas): boolean;
+                         {Esta funcion comprueba si la casilla destino es valida, segun la direccion que lleve la bola}
+                         {direccion[IN]: parametro de salida que almacena la direccion que lleva la bola}
+                         {fila[IN]: parametro de entrada que almacena la fila en la que se encuentra la bola}
+                         {columna[IN]: parametro de entrada que almacena la columna en la que se encuentra la bola}
+                         BEGIN
+                           CASE direccion OF
+                             N: casillaDestinoValida:= (fila-1 <= FILAS) AND (fila-1 >= 1);
+                             S: casillaDestinoValida:= (fila+1 <= FILAS) AND (fila+1 >= 1);
+                             E: casillaDestinoValida:= (columna+1 <= COLUMNAS) AND (columna+1 >= 1);
+                             O: casillaDestinoValida:= (columna-1 <= COLUMNAS) AND (columna-1 >= 1);
+                             NE: casillaDestinoValida:= (fila-1 <= FILAS) AND (fila-1 >= 1) AND
+                                                        (columna+1 <= COLUMNAS) AND (columna+1 >= 1);
+                             NO: casillaDestinoValida:= (fila-1 <= FILAS) AND (fila-1 >= 1) AND
+                                                        (columna-1 <= COLUMNAS) AND (columna-1 >= 1);
+                             SE: casillaDestinoValida:= (fila+1 <= FILAS) AND (fila+1 >= 1) AND
+                                                        (columna+1 <= COLUMNAS) AND (columna+1 >= 1);
+                             SO: casillaDestinoValida:= (fila+1 <= FILAS) AND (fila+1 >= 1) AND
+                                                        (columna-1 <= COLUMNAS) AND (columna-1 >= 1);
+                           end;
+                         END;
+
+
+                         FUNCTION casillaDestinoVacia (Tablero: TTablero; direccion: TDireccion;
+                                                       fila: TFilas; columna: TColumnas): boolean;
+                         {Esta funcion calcula si la casilla destino esta vacia, segun la direccion que
+                          lleve la bola}
+                         {Tablero[OUT]: Parametro de salida que almacena la situacion del tablero}
+                         {direccion[IN]: parametro de salida que almacena la direccion que lleva la bola}
+                         {fila[IN]: parametro de entrada que almacena la fila en la que se encuentra la bola}
+                         {columna[IN]: parametro de entrada que almacena la columna en la que se encuentra la bola}
+                         BEGIN
+                           CASE direccion OF
+                             N: casillaDestinoVacia:= (Tablero [fila-1, columna] = ' ');
+                             S: casillaDestinoVacia:= (Tablero [fila+1, columna] = ' ');
+                             E: casillaDestinoVacia:= (Tablero [fila, columna+1] = ' ');
+                             O: casillaDestinoVacia:= (Tablero [fila, columna-1] = ' ');
+                             NE: casillaDestinoVacia:= (Tablero [fila-1, columna+1] = ' ');
+                             NO: casillaDestinoVacia:= (Tablero [fila-1, columna-1] = ' ');
+                             SE: casillaDestinoVacia:= (Tablero [fila+1, columna+1] = ' ');
+                             SO: casillaDestinoVacia:= (Tablero [fila+1, columna-1] = ' ');
+                           end;
+                         END;
+
+
+                         PROCEDURE nuevaCasilla (direccion: TDireccion; var fila: TFilas; var columna: TColumnas);
+                         {Este procedimiento calcula la nueva casilla a la que va la bola, segun la direccion que lleva}
+                         {direccion[IN]: parametro de salida que almacena la direccion que lleva la bola}
+                         {fila[OUT]: parametro de salida que almacena la nueva fila en la que se encuentra la bola}
+                         {columna[OUT]: parametro de salida que almacena la nueva columna en la que se encuentra la bola}
+                         BEGIN
+                           CASE direccion OF
+                             N: fila:= fila-1;
+                             S: fila:= fila+1;
+                             E: columna:= columna+1;
+                             O: columna:= columna-1;
+                             NE: begin
+                                   fila:= fila-1;
+                                   columna:= columna+1;
+                                 end;
+                             NO: begin
+                                   fila:= fila-1;
+                                   columna:= columna-1;
+                                 end;
+                             SE: begin
+                                   fila:= fila+1;
+                                   columna:= columna+1;
+                                 end;
+                             SO: begin
+                                   fila:= fila+1;
+                                   columna:= columna-1;
+                                 end;
+                           end;
+                         END;
+
+
+                         PROCEDURE rebote (var direccion: TDireccion);
+                         {Este procedimiento cambia la direccion que lleva
+                          la bola, generando una nueva, aleatoriamente}
+                         {direccion[OUT]: parametro de salida que almacena
+                          la nueva direccion de la bola}
+                         VAR
+                          dir: integer;
+                         BEGIN
+                           dir:= random (8);
+                           direccion:= TDireccion (dir);
+                         END;
+
+
+                 BEGIN
+                   IF (fila = 8) AND (columna = 5) AND ((direccion = S) OR (direccion = E) OR (direccion = SE)) THEN
+                     begin
+                       Fin:= TRUE;
+                       Tablero [fila, columna]:= ' ';
+                     end
+                   ELSE
+                     IF casillaDestinoValida (direccion, fila, columna) AND
+                        casillaDestinoVacia (Tablero, direccion, fila, columna) THEN
+                       begin
+                         Tablero [fila, columna]:= ' ';
+                         nuevaCasilla (direccion, fila, columna);
+                         Tablero [fila, columna]:= bola;
+                         numMovimientos:= numMovimientos+1;
+                       end
+                     ELSE
+                       begin
+                         rebote (direccion);
+                         numMovimientos:= numMovimientos+1;
+                       end;
+                 END;
+
+
+         BEGIN
+           numMovimientos:= 0;
+           fin:= FALSE;
+           REPEAT
+             realizarMovimiento (Tablero, fila, columna, direccion, fin, numMovimientos);
+             IF (numMovimientos mod 4) = 0 THEN
+               avanzarTiempo (minutos, segundos);
+             mostrarTablero (Tablero);
+             mostrarTiempo (horas, minutos, segundos);
+             Delay (250);
+             gotoXY (1,23);
+             Writeln ('Pulse tecla cualquiera para finalizar');
+           UNTIL fin OR Keypressed;
+         END;
+
+
+BEGIN
+  REPEAT
+    ClrScr;
+    Bienvenida (opcion);
+    randomize;
+    IF opcion = 1 THEN
+      begin
+        InicializaTablero (Tablero);
+        InicializaSituacion (fila, columna, direccion, horas, minutos, segundos);
+        mostrarTablero (Tablero);
+        mostrarTiempo (horas, minutos, segundos);
+        Delay (250);
+        Visualizacion (Tablero, fila, columna, direccion, horas, minutos, segundos);
+        REPEAT
+        UNTIL Keypressed;
+      end;
+  UNTIL opcion = 2;
+END.

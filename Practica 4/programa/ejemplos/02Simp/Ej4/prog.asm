@@ -1,0 +1,9 @@
+STORE [0] 1
+STORE [1] 1
+STORE [2] 1
+READ [3]
+READ [4]
+SUM [3] [4]
+SUM [3] [2]
+SUM [0] [2]
+WRITE [3]
